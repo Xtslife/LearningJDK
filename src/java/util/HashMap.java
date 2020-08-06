@@ -38,6 +38,11 @@ import java.util.function.Function;
 import jdk.internal.misc.SharedSecrets;
 
 /**
+ * 1.基于哈希表实现
+ * 2.键和值允许为空
+ * 3.不考虑线程安全和允许为空 HashMap近似等价于HashTable
+ * 4.HashMap不保证顺序
+ *
  * Hash table based implementation of the {@code Map} interface.  This
  * implementation provides all of the optional map operations, and permits
  * {@code null} values and the {@code null} key.  (The {@code HashMap}
@@ -55,6 +60,11 @@ import jdk.internal.misc.SharedSecrets;
  * capacity too high (or the load factor too low) if iteration performance is
  * important.
  *
+ * 1.两个重要的属性：initial capacity 和 load factor
+ * 2.capacity 哈希表中的桶
+ * 3.加载因子是估量HashMap允许填满的程度
+ * 4.当entry的数量达到当前容量和加载因子的乘积的时候，HashMap就扩容为原来的两倍，并进行重新哈希
+ *
  * <p>An instance of {@code HashMap} has two parameters that affect its
  * performance: <i>initial capacity</i> and <i>load factor</i>.  The
  * <i>capacity</i> is the number of buckets in the hash table, and the initial
@@ -66,6 +76,9 @@ import jdk.internal.misc.SharedSecrets;
  * structures are rebuilt) so that the hash table has approximately twice the
  * number of buckets.
  *
+ * 1.一般，为了时间和空间的平衡，加载因子默认为0.75
+ * 2. 加载因子越大，减少了空间开销，但是增加了查找成本
+ * 3.加载因子小，就会频繁扩容
  * <p>As a general rule, the default load factor (.75) offers a good
  * tradeoff between time and space costs.  Higher values decrease the
  * space overhead but increase the lookup cost (reflected in most of
@@ -86,6 +99,7 @@ import jdk.internal.misc.SharedSecrets;
  * are {@link Comparable}, this class may use comparison order among
  * keys to help break ties.
  *
+ * 1.HashMap是线程不安全的
  * <p><strong>Note that this implementation is not synchronized.</strong>
  * If multiple threads access a hash map concurrently, and at least one of
  * the threads modifies the map structurally, it <i>must</i> be
@@ -266,7 +280,7 @@ public class HashMap<K,V> extends AbstractMap<K,V> implements Map<K,V>, Cloneabl
      * shrinkage.
      */
     static final int TREEIFY_THRESHOLD = 8;     // 某个哈希槽（链）上的元素数量增加到此值后，这些元素进入波动期，即将从链表转换为红黑树
-    
+
     /**
      * The smallest table capacity for which bins may be treeified.
      * (Otherwise the table is resized if too many nodes in a bin.)
@@ -432,7 +446,7 @@ public class HashMap<K,V> extends AbstractMap<K,V> implements Map<K,V>, Cloneabl
      * These mappings will replace any mappings that this map had for
      * any of the keys currently in the specified map.
      *
-     * @param m mappings to be stored in this map
+     * @param  mappings to be stored in this map
      *
      * @throws NullPointerException if the specified map is null
      */
@@ -1474,7 +1488,7 @@ public class HashMap<K,V> extends AbstractMap<K,V> implements Map<K,V>, Cloneabl
     /**
      * Implements Map.putAll and Map constructor.
      *
-     * @param m     the map
+     * @param      the map
      * @param evict false when initially constructing this map, else true (relayed to method afterNodeInsertion).
      */
     // 将指定HashMap中的元素存入到当前HashMap（允许覆盖）
